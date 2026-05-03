@@ -6,7 +6,9 @@ import generateToken from '../utils/generateToken.js';
 // @access  Public
 export const register = async (req, res) => {
   try {
-    const { name, email, password, institution, studentId } = req.body;
+    const { name, institution, studentId } = req.body;
+    const email = req.body.email?.toLowerCase().trim();
+    const password = req.body.password?.trim();
 
     if (!name || !email || !password) {
       return res.status(400).json({ message: 'Please provide name, email and password' });
@@ -39,7 +41,8 @@ export const register = async (req, res) => {
 // @access  Public
 export const login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const email = req.body.email?.toLowerCase().trim();
+    const password = req.body.password?.trim();
 
     if (!email || !password) {
       return res.status(400).json({ message: 'Please provide email and password' });
