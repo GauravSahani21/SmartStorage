@@ -1,0 +1,9 @@
+{
+  "name": "smartstorage",
+  "version": "1.0.0",
+  "description": "SmartStorage — DigiLocker for Students (monorepo)",
+  "scripts": {
+    "build": "npm install --prefix backend --omit=dev && npm install --prefix frontend && npm run build --prefix frontend",
+    "start": "cd backend && npm start"
+  }
+}

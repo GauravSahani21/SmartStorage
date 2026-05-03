@@ -1,10 +1,10 @@
 services:
-  # ── Backend API (Node.js Web Service) ────────────────────────────────────────
+  # ── Full Stack Web Service (Node.js + React) ─────────────────────────────────
   - type: web
-    name: smartstorage-api
+    name: smartstorage
     runtime: node
-    rootDir: backend
-    buildCommand: npm install --omit=dev
+    # Note: no rootDir specified because the build script is in the root package.json
+    buildCommand: npm run build
     startCommand: npm start
     envVars:
       - key: NODE_ENV
@@ -15,26 +15,7 @@ services:
         sync: false  # Set this manually in the Render dashboard
       - key: JWT_SECRET
         sync: false  # Set this manually in the Render dashboard
-      - key: CLIENT_URL
-        sync: false  # Set to your Render frontend URL after first deploy
       - key: GEMINI_API_KEY
         sync: false  # Set this manually in the Render dashboard
     healthCheckPath: /api/health
-    autoDeploy: true
-
-  # ── Frontend (Static Site) ────────────────────────────────────────────────────
-  - type: web
-    name: smartstorage-app
-    runtime: static
-    rootDir: frontend
-    buildCommand: npm install && npm run build
-    staticPublishPath: dist
-    envVars:
-      - key: VITE_API_URL
-        sync: false  # Set to your Render backend URL + /api e.g. https://smartstorage-api.onrender.com/api
-    routes:
-      # Send all routes to index.html so React Router works correctly
-      - type: rewrite
-        source: /*
-        destination: /index.html
     autoDeploy: true

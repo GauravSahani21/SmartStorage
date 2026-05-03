@@ -1,7 +1,9 @@
 import axios from 'axios';
 
+// In production (same-origin), use relative /api path.
+// In local dev, set VITE_API_URL=http://localhost:5005/api in frontend/.env
 const API = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5005/api',
+  baseURL: import.meta.env.VITE_API_URL || '/api',
   timeout: 60000, // bumped for AI calls
 });
 
@@ -27,7 +29,7 @@ API.interceptors.response.use(
   }
 );
 
-const BASE = import.meta.env.VITE_API_URL || 'http://localhost:5005/api';
+const BASE = import.meta.env.VITE_API_URL || '/api';
 
 // Auth
 export const authAPI = {
