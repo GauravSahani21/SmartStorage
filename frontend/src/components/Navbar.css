@@ -4,7 +4,7 @@
   left: var(--sidebar-width);
   right: 0;
   height: var(--navbar-height);
-  background: rgba(15, 22, 41, 0.8);
+  background: var(--bg-glass);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border-subtle);
@@ -118,6 +118,27 @@
   cursor: pointer;
   border: 2px solid transparent;
   transition: border-color var(--transition-fast);
+}
+
+.navbar-theme-toggle {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.navbar-theme-toggle:hover {
+  background: var(--bg-card-hover);
+  color: var(--color-primary);
+  transform: scale(1.05);
+  border-color: var(--color-primary);
 }
 
 .navbar-avatar:hover {

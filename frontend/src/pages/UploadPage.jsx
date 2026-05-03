@@ -24,7 +24,7 @@ export default function UploadPage() {
   const [done, setDone] = useState(false);
   const [uploadedDoc, setUploadedDoc] = useState(null);
   const [form, setForm] = useState({
-    title: '', description: '', category: 'other',
+    title: '', description: '', category: 'Other',
     year: '', institution: '', tags: '', expiresAt: '',
   });
   const [error, setError] = useState('');

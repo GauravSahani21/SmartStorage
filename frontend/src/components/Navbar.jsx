@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Search, Upload, Zap, Menu } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
+import { Search, Upload, Zap, Menu, Sun, Moon } from 'lucide-react';
 import VaultLogo from './VaultLogo';
 import './Navbar.css';
 
 export default function Navbar({ onMenuToggle, searchValue, onSearchChange }) {
   const { user } = useAuth();
+  const { isDarkMode, toggleTheme } = useTheme();
   const navigate = useNavigate();
 
   const handleSearchSubmit = (e) => {
@@ -42,6 +44,14 @@ export default function Navbar({ onMenuToggle, searchValue, onSearchChange }) {
       </form>
 
       <div className="navbar-right">
+        <button 
+          className="navbar-theme-toggle" 
+          onClick={toggleTheme}
+          title={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+        >
+          {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
+        </button>
+
         <Link to="/upload" className="btn btn-primary btn-sm hide-mobile">
           <Upload size={15} />
           Upload

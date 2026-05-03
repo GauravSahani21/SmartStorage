@@ -12,6 +12,7 @@ export default function DocumentsPage() {
   const [docs, setDocs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState('grid');
+  const [availableCategories, setAvailableCategories] = useState([]);
 
   // Filters from URL
   const category = searchParams.get('category') || 'all';
@@ -20,6 +21,22 @@ export default function DocumentsPage() {
   const year = searchParams.get('year') || '';
 
   const [localSearch, setLocalSearch] = useState(search);
+
+  // Fetch unique categories from stats
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const { data } = await documentsAPI.getStats();
+        if (data.categoryBreakdown) {
+          const cats = data.categoryBreakdown.map(c => c._id).filter(Boolean);
+          setAvailableCategories([...new Set(cats)]);
+        }
+      } catch (err) {
+        console.error('Failed to fetch categories:', err);
+      }
+    };
+    fetchStats();
+  }, []);
 
   const fetchDocs = useCallback(async () => {
     setLoading(true);
@@ -95,7 +112,6 @@ export default function DocumentsPage() {
           )}
         </form>
 
-        {/* Category filter */}
         <select
           id="docs-category-filter"
           className="form-select docs-select"
@@ -103,8 +119,10 @@ export default function DocumentsPage() {
           onChange={(e) => setParam('category', e.target.value)}
         >
           <option value="all">All Categories</option>
-          {CATEGORIES.map(({ value, label }) => (
-            <option key={value} value={value}>{label}</option>
+          {availableCategories.map((cat) => (
+            <option key={cat} value={cat}>
+              {CATEGORY_LABELS[cat] || cat.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
+            </option>
           ))}
         </select>
 

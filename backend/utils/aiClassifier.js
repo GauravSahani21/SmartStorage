@@ -2,8 +2,6 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-const VALID_CATEGORIES = ['marksheet', 'certificate', 'assignment', 'id_card', 'admission', 'fee_receipt', 'other'];
-
 /**
  * Uses Gemini Flash to classify a student document by filename + mimeType.
  * Returns { category, tags[] }
@@ -12,17 +10,22 @@ export async function classifyDocument(filename, mimeType, title = '') {
   try {
     const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
-    const prompt = `You are classifying academic documents for a student document management system.
+    const prompt = `You are classifying academic and personal documents for a student document management system.
 
 Document info:
 - Filename: "${filename}"
 - Title: "${title || filename}"
 - File type: "${mimeType}"
 
-Classify this document and return ONLY valid JSON (no markdown, no explanation):
+Tasks:
+1. Determine the best category for this document. Use common ones like "Marksheet", "Certificate", "Assignment", "ID Card", "Fee Receipt", "Admission" if they fit.
+2. If it doesn't fit the common ones, SUGGEST a new concise category name (e.g. "Admit Card", "Visa", "Internship Letter", "Recommendation").
+3. Suggest 2-4 relevant tags.
+
+Return ONLY valid JSON:
 {
-  "category": "<one of: marksheet | certificate | assignment | id_card | admission | fee_receipt | other>",
-  "tags": ["<2-4 relevant tags, e.g. semester, subject, college, year>"]
+  "category": "Concise Category Name (Title Case)",
+  "tags": ["tag1", "tag2"]
 }`;
 
     const result = await model.generateContent(prompt);
@@ -33,14 +36,23 @@ Classify this document and return ONLY valid JSON (no markdown, no explanation):
 
     const parsed = JSON.parse(text);
 
-    // Validate category
-    if (!VALID_CATEGORIES.includes(parsed.category)) parsed.category = 'other';
+    // Normalize category: ensure it's a string and not empty
+    if (typeof parsed.category !== 'string' || !parsed.category.trim()) {
+      parsed.category = 'Other';
+    }
+    
+    // Title Case the category for consistency
+    parsed.category = parsed.category.trim()
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
+
     if (!Array.isArray(parsed.tags)) parsed.tags = [];
 
     return parsed;
   } catch (err) {
-    console.warn('AI classification failed, falling back to "other":', err.message);
-    return { category: 'other', tags: [] };
+    console.warn('AI classification failed, falling back to "Other":', err.message);
+    return { category: 'Other', tags: [] };
   }
 }
 

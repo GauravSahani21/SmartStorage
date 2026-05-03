@@ -21,8 +21,7 @@ const documentSchema = new mongoose.Schema(
     },
     category: {
       type: String,
-      enum: ['marksheet', 'certificate', 'assignment', 'id_card', 'admission', 'fee_receipt', 'other'],
-      default: 'other',
+      default: 'Other',
     },
     aiCategorized: { type: Boolean, default: false }, // was category set by AI?
 
