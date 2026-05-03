@@ -9,7 +9,7 @@ const API = axios.create({
 
 // Attach JWT token to every request
 API.interceptors.request.use((config) => {
-  const token = localStorage.getItem('studentvault_token');
+  const token = sessionStorage.getItem('studentvault_token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -21,8 +21,8 @@ API.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem('studentvault_token');
-      localStorage.removeItem('studentvault_user');
+      sessionStorage.removeItem('studentvault_token');
+      sessionStorage.removeItem('studentvault_user');
       window.location.href = '/login';
     }
     return Promise.reject(error);
