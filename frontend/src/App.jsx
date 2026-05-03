@@ -55,7 +55,10 @@ function AppShell({ children }) {
 
   return (
     <div className="app-layout">
-      <Sidebar className={sidebarOpen ? 'open' : ''} />
+      <Sidebar 
+        className={sidebarOpen ? 'open' : ''} 
+        onNavItemClick={() => setSidebarOpen(false)}
+      />
       <div className="main-content">
         <Navbar
           onMenuToggle={() => setSidebarOpen((p) => !p)}

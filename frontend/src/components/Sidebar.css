@@ -278,4 +278,25 @@
   .sidebar.open {
     transform: translateX(0);
   }
+
+  .sidebar-close-btn {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-md);
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+  }
+
+  .sidebar-close-btn:hover {
+    background: var(--bg-card-hover);
+    color: var(--text-primary);
+  }
 }

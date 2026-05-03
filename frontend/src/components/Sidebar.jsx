@@ -4,7 +4,7 @@ import {
   LayoutDashboard, Upload, User, LogOut,
   FolderOpen, Award, ClipboardList,
   CreditCard, BookOpen, ArrowRight, HardDrive, BookMarked,
-  GitBranch, Users
+  GitBranch, Users, X
 } from 'lucide-react';
 import VaultLogo from './VaultLogo';
 import { formatFileSize, storagePercent } from '../utils/helpers';
@@ -27,7 +27,7 @@ const categoryItems = [
   { label: 'Admission', icon: BookOpen, path: '/documents?category=admission', color: 'var(--cat-admission)' },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ className, onNavItemClick }) {
   const { pathname } = useLocation();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -42,7 +42,12 @@ export default function Sidebar() {
   const isWarning = usedPercent >= 80;
 
   return (
-    <aside className="sidebar">
+    <aside className={`sidebar ${className || ''}`}>
+      {/* Mobile Close Button */}
+      <button className="sidebar-close-btn show-mobile" onClick={onNavItemClick}>
+        <X size={20} />
+      </button>
+
       {/* Logo */}
       <div className="sidebar-logo">
         <div className="sidebar-logo-icon">
@@ -62,6 +67,7 @@ export default function Sidebar() {
             key={path}
             to={path}
             className={`sidebar-nav-item ${pathname === path ? 'active' : ''}`}
+            onClick={onNavItemClick}
           >
             <div className="sidebar-nav-icon-wrap">
               <Icon size={17} />
@@ -81,6 +87,7 @@ export default function Sidebar() {
             key={path}
             to={path}
             className="sidebar-nav-item sidebar-nav-category"
+            onClick={onNavItemClick}
           >
             <Icon size={16} style={{ color }} />
             <span>{label}</span>
