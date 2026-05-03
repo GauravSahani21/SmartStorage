@@ -26,7 +26,7 @@ export default function ProfilePage() {
     try {
       const { data } = await authAPI.updateProfile(profileForm);
       const updated = { ...user, ...data };
-      localStorage.setItem('studentvault_user', JSON.stringify(updated));
+      sessionStorage.setItem('studentvault_user', JSON.stringify(updated));
       setUser(updated);
       toast.success('Profile updated!');
     } catch (err) {

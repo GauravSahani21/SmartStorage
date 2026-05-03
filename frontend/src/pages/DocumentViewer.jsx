@@ -57,7 +57,7 @@ export default function DocumentViewer() {
 
         // Pre-fetch file blob for authenticated preview
         if (data.mimeType?.startsWith('image/') || data.mimeType === 'application/pdf') {
-          const token = localStorage.getItem('studentvault_token');
+          const token = sessionStorage.getItem('studentvault_token');
           const resp = await fetch(documentsAPI.getFile(data._id || id), {
             headers: { Authorization: `Bearer ${token}` },
           });
