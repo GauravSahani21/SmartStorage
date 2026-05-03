@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { documentsAPI } from '../services/api';
+import { documentsAPI, default as API } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { formatFileSize, formatDate, CATEGORY_LABELS } from '../utils/helpers';
 import ConfirmModal from '../components/ConfirmModal';
@@ -42,6 +42,8 @@ export default function DocumentViewer() {
 
   const fileUrl = documentsAPI.getFile(id);
 
+  const [previewError, setPreviewError] = useState(false);
+
   useEffect(() => {
     const load = async () => {
       try {
@@ -61,15 +63,17 @@ export default function DocumentViewer() {
 
         // Pre-fetch file blob for authenticated preview
         if (data.mimeType?.startsWith('image/') || data.mimeType === 'application/pdf') {
-          const token = sessionStorage.getItem('studentvault_token');
-          const resp = await fetch(documentsAPI.getFile(data._id || id), {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          if (resp.ok) {
-            const blob = await resp.blob();
-            const url = URL.createObjectURL(blob);
+          try {
+            const resp = await API.get(`/documents/${data._id || id}/file`, {
+              responseType: 'blob'
+            });
+            const url = URL.createObjectURL(resp.data);
             blobRef.current = url;
             setBlobUrl(url);
+            setPreviewError(false);
+          } catch (err) {
+            console.error('Preview fetch failed:', err);
+            setPreviewError(true);
           }
         }
       } catch {
@@ -222,7 +226,15 @@ export default function DocumentViewer() {
       <div className="viewer-layout">
         {/* ── Preview Panel ── */}
         <div className="viewer-preview">
-          {isImage ? (
+          {previewError ? (
+            <div className="viewer-no-preview error">
+              <ShieldOff size={40} className="text-error" />
+              <p>Unable to load preview securely.</p>
+              <button className="btn btn-primary" onClick={handleDownload}>
+                <Download size={16} /> Download to View
+              </button>
+            </div>
+          ) : isImage ? (
             blobUrl ? (
               <img src={blobUrl} alt={doc.title} className="viewer-image" />
             ) : (
