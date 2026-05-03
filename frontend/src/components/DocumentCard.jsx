@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { documentsAPI } from '../services/api';
+import { useAuth } from '../context/AuthContext';
+import ConfirmModal from './ConfirmModal';
 import {
   FileText, Trash2, Share2, Eye, MoreVertical,
   Calendar, Building, Tag, Download
@@ -14,6 +16,8 @@ export default function DocumentCard({ doc, onDelete, onRefresh }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [sharing, setSharing] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const { refreshUser } = useAuth();
 
   const handleShare = async (e) => {
     e.stopPropagation();
@@ -31,13 +35,12 @@ export default function DocumentCard({ doc, onDelete, onRefresh }) {
     }
   };
 
-  const handleDelete = async (e) => {
-    e.stopPropagation();
-    if (!confirm(`Delete "${doc.title}"? This cannot be undone.`)) return;
+  const handleDelete = async () => {
     setDeleting(true);
     try {
       await documentsAPI.delete(doc._id);
       toast.success('Document deleted');
+      await refreshUser(); // Update stats
       onDelete?.(doc._id);
     } catch (err) {
       toast.error(err.response?.data?.message || 'Delete failed');
@@ -125,13 +128,23 @@ export default function DocumentCard({ doc, onDelete, onRefresh }) {
           </button>
           <button
             className="doc-card-action-btn danger"
-            onClick={handleDelete}
+            onClick={(e) => { e.stopPropagation(); setShowDeleteModal(true); }}
             disabled={deleting}
             title="Delete"
           >
             <Trash2 size={15} />
           </button>
         </div>
+
+        <ConfirmModal
+          isOpen={showDeleteModal}
+          title="Delete Document"
+          message={`Delete "${doc.title}"? This cannot be undone.`}
+          confirmText="Delete"
+          isDanger={true}
+          onConfirm={handleDelete}
+          onCancel={() => setShowDeleteModal(false)}
+        />
       </div>
 
       {/* Shared indicator */}

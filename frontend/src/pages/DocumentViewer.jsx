@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { documentsAPI } from '../services/api';
+import { useAuth } from '../context/AuthContext';
 import { formatFileSize, formatDate, CATEGORY_LABELS } from '../utils/helpers';
+import ConfirmModal from '../components/ConfirmModal';
 import {
   ArrowLeft, Download, Share2, Trash2, Pencil, X,
   CalendarDays, Building2, Tag, Copy, FileText,
@@ -23,6 +25,8 @@ export default function DocumentViewer() {
   const [editing, setEditing] = useState(false);
   const [editForm, setEditForm] = useState({});
   const [blobUrl, setBlobUrl] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const { refreshUser } = useAuth();
   const blobRef = useRef(null);
   const [isRoomAccess, setIsRoomAccess] = useState(false); // viewing via room, not owner
 
@@ -113,10 +117,10 @@ export default function DocumentViewer() {
 
   // ── Delete ─────────────────────────────────────────────────────────────────
   const handleDelete = async () => {
-    if (!confirm(`Delete "${doc?.title}"? This cannot be undone.`)) return;
     try {
       await documentsAPI.delete(id);
       toast.success('Document deleted');
+      await refreshUser(); // Update storage stats
       navigate('/documents');
     } catch {
       toast.error('Delete failed');
@@ -196,6 +200,16 @@ export default function DocumentViewer() {
       <button className="viewer-back-btn" onClick={() => navigate(-1)}>
         <ArrowLeft size={16} /> Back
       </button>
+
+      <ConfirmModal
+        isOpen={showDeleteModal}
+        title="Delete Document"
+        message={`Are you sure you want to delete "${doc?.title}"? This action cannot be undone.`}
+        confirmText="Delete"
+        isDanger={true}
+        onConfirm={handleDelete}
+        onCancel={() => setShowDeleteModal(false)}
+      />
 
       {/* Room-access read-only banner */}
       {isRoomAccess && (
@@ -456,7 +470,7 @@ export default function DocumentViewer() {
 
             {/* Delete — owner only */}
             {!isRoomAccess && (
-              <button className="btn btn-danger w-full" onClick={handleDelete} id="viewer-delete-btn">
+              <button className="btn btn-danger w-full" onClick={() => setShowDeleteModal(true)} id="viewer-delete-btn">
                 <Trash2 size={16} /> Delete Document
               </button>
             )}
