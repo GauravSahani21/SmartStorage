@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: smartstorage-api
+    runtime: node
+    rootDir: backend
+    buildCommand: npm install --omit=dev
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: MONGO_URI
+        sync: false  # Set this manually in the Render dashboard
+      - key: JWT_SECRET
+        sync: false  # Set this manually in the Render dashboard
+      - key: CLIENT_URL
+        sync: false  # Set to your Vercel frontend URL
+      - key: GEMINI_API_KEY
+        sync: false  # Set this manually in the Render dashboard
+    healthCheckPath: /api/health
+    autoDeploy: true
