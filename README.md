@@ -1,4 +1,5 @@
 # 🎓 SmartStorage — DigiLocker for Students
+live: https://smartstorage-2s6u.onrender.com
 
 A full-stack document management platform for students to securely upload, organize, share, and verify their academic documents using AI-powered categorization.
 
